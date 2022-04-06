@@ -55,7 +55,7 @@ async function inverse(tickers: string[]) {
 
     if (price && amountShares) {
       console.log(`Shorting ${ticker}: ${amountShares} shares, ${price} per share`)
-      // order({ ticker, amountShares })
+      order({ ticker, amountShares })
     }
   })
   await Promise.all(orders)

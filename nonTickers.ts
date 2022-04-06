@@ -1,4 +1,5 @@
 export default [
+  "IQ",
   "UI",
   "CSV",
   "ARE",
