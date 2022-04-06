@@ -8,4 +8,5 @@ interface createOrderParams {
   ticker: string, 
   side?: sides,
   amountShares?: number
+  limitPrice?: number
 }

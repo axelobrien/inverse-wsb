@@ -9,41 +9,58 @@ const alpaca = new Alpaca({
 })
 
 
-const order = async ({ ticker, side, amountShares }: createOrderParams) => await alpaca.createOrder({
-  symbol: ticker, // any valid ticker symbol
-  side: side || 'sell',
-  qty: amountShares || 10,
-  type: 'market',
-  time_in_force: 'day',
-}).catch(async (e) => {
+async function order({ ticker, side, amountShares, limitPrice }: createOrderParams) {
+  try {
+    await alpaca.createOrder({
+      symbol: ticker, // any valid ticker symbol
+      side: side || 'sell',
+      qty: amountShares || 10,
+      type: limitPrice ? 'limit' : 'market',
+      limit_price: limitPrice || undefined,
+      time_in_force: 'day',
+    })
+  } catch (e) {
     const message: string = e.response.data.message
 
     if (message.match(/asset "(.*?)" cannot be sold short/)) {
-      console.log(`${ticker} cannot be sold short`)
-      return await order({ ticker, side: 'buy', amountShares })
+      console.log(`${ticker} cannot be sold short, skipping`)
+      // return await order({ ticker, side: 'buy', amountShares }) // uncomment to buy instead
 
     } else if (!message.match(/^could not find asset /)) {
       console.log(e)
     }
-})
+  }
+}
+
+async function getPrice(ticker: string) {
+  let price: number
+  try {
+    const trade = await alpaca.getLatestTrade(ticker)
+    price = trade.Price
+  } catch (e) {
+    if (!e.toString().startsWith('Error: code: 404, message:')) {
+      console.log(e)
+    }
+    return null
+  }
+  return price
+}
+
+async function inverse(tickers: string[]) {
+  const orders = tickers.map(async (ticker) => {
+
+    const price = await getPrice(ticker)
+    const dollarLimit = 1000
+    const amountShares = Math.floor(dollarLimit / price)
+
+    if (price && amountShares) {
+      console.log(`Shorting ${ticker}: ${amountShares} shares, ${price} per share`)
+      // order({ ticker, amountShares })
+    }
+  })
+  await Promise.all(orders)
+}
 
 const Wallstreetbets = await fetchAndParseTickers()
 
-async function inverse(tickers: string[]) {
-  
-  // fill array with orders and promise.all to wait for all to finish
-  tickers.forEach(ticker => order({ ticker }).catch(e => console.log(e)))
-
-}
-
 inverse(Wallstreetbets)
-
-//keeping this code for reference, specifically for the timestamp format
-
-// const orders = await alpaca.getOrders({
-//   status: 'all',
-//   after: '2022-03-10T00:00:00Z',
-//   until: '2022-05-10T23:59:59Z',
-//   limit: 1,
-//   direction: 'asc',
-// })
