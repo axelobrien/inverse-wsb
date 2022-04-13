@@ -1,5 +1,6 @@
 import fetch from 'node-fetch'
 import nonTickers  from './nonTickers.js'
+import allUSTickers from './symbols.js'
 
 async function fetchTitles() {
   // funky looking await syntax because only the text is needed
@@ -25,7 +26,7 @@ async function fetchTitles() {
   //get titles from elements
   const titles = titleElements.map(title => {
       let cleanTitle = title.replace(
-      /<a class="title(.*?)" data-event-action="title" href="(.*?)"(.*?)>/g, '') // remove <a> tags
+      /<a class="title(.*?)" data-event-action="title" href="\/(.*?)"(.*?)>/g, '') // remove <a> tags
       cleanTitle = cleanTitle.substring(0, cleanTitle.length - 4) // remove </a>
       return cleanTitle
   })
@@ -42,7 +43,7 @@ function findTickers(titles: string[]) {
       possibleTickers && possibleTickers.forEach(ticker => {
         ticker = ticker.replace(/\W/g, '')
 
-        if ((ticker.length > 1 && ticker.length < 6) && !nonTickers.includes(ticker)) {
+        if ((ticker.length > 1 && ticker.length < 6) && !nonTickers.includes(ticker) && allUSTickers.includes(ticker)) {
           tickers.push(ticker)
         }
       })

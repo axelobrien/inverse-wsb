@@ -1,4 +1,11 @@
 export default [
+  "CPI",
+  "HF",
+  "LFG",
+  "PL",
+  "API",
+  "MOON",
+  "APE",
   "IQ",
   "UI",
   "CSV",

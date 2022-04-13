@@ -8,7 +8,6 @@ const alpaca = new Alpaca({
   paper: true,
 })
 
-
 async function order({ ticker, side, amountShares, limitPrice }: createOrderParams) {
   try {
     await alpaca.createOrder({
@@ -19,6 +18,7 @@ async function order({ ticker, side, amountShares, limitPrice }: createOrderPara
       limit_price: limitPrice || undefined,
       time_in_force: 'day',
     })
+
   } catch (e) {
     const message: string = e.response.data.message
 
@@ -29,14 +29,17 @@ async function order({ ticker, side, amountShares, limitPrice }: createOrderPara
     } else if (!message.match(/^could not find asset /)) {
       console.log(e)
     }
+
   }
 }
 
 async function getPrice(ticker: string) {
   let price: number
+
   try {
     const trade = await alpaca.getLatestTrade(ticker)
     price = trade.Price
+
   } catch (e) {
     if (!e.toString().startsWith('Error: code: 404, message:')) {
       console.log(e)
@@ -48,15 +51,20 @@ async function getPrice(ticker: string) {
 
 async function inverse(tickers: string[]) {
   const orders = tickers.map(async (ticker) => {
-
     const price = await getPrice(ticker)
-    const dollarLimit = 1000
+
+    const dollarLimit = 1000 // max dollar amount to spend on each order
     const amountShares = Math.floor(dollarLimit / price)
 
     if (price && amountShares) {
       console.log(`Shorting ${ticker}: ${amountShares} shares, ${price} per share`)
       order({ ticker, amountShares })
-    }
+    } else if (price > dollarLimit) {
+      console.log(`Shorting ${ticker}: 1 share, ${price} per share`)
+      order({ticker, amountShares: 1})
+    } else {
+      console.log(`Skipping ${ticker}: ${price} per share`)
+    } 
   })
   await Promise.all(orders)
 }
