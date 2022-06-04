@@ -38,11 +38,11 @@ function findTickers(titles: string[]) {
   const tickers: string[] = []
 
   titles.forEach(title => {
+    title = ' '.concat(title) // add space to make regex easier
     const possibleTickers = title.match(/(\$| )[A-Z]{1,5}\W/g)
 
       possibleTickers && possibleTickers.forEach(ticker => {
         ticker = ticker.replace(/\W/g, '')
-
         if ((ticker.length > 1 && ticker.length < 6) && !nonTickers.includes(ticker) && allUSTickers.includes(ticker)) {
           tickers.push(ticker)
         }

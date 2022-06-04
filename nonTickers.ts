@@ -1,4 +1,7 @@
 export default [
+  "TA",
+  "HUGE",
+  "IRS",
   "CPI",
   "HF",
   "LFG",
