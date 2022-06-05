@@ -10,14 +10,18 @@ const alpaca = new Alpaca({
   paper: true,
 })
 
-const allStocks = await alpaca.getAssets({
+alpaca.getAssets({
   status: 'active',
   asset_class: 'us_equity',
+}).then(allStocks => {
+
+  const allSymbols = allStocks.map((stock) => `"${stock.symbol}",`)
+
+  const fileString = `// Updated as of ${new Date().toISOString()}
+  export default [
+    ${allSymbols.join('\n\t')}
+  ]`
+
+  fs.writeFileSync('../symbols.ts', fileString)
+  fs.writeFileSync('./symbols.js', fileString)
 })
-
-const allSymbols = allStocks.map((stock) => `"${stock.symbol}",`)
-
-fs.writeFileSync('../symbols.ts', `// Updated as of ${new Date().toISOString()}
-export default [
-  ${allSymbols.join('\n\t')}
-]`)

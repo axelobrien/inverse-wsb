@@ -29,4 +29,4 @@ const getPercentReturnsOfOpenPositions = async (rounded? : boolean) => {
   return rounded ? totalPercentReturnRounded : totalPercentReturn
 }
 
-console.log(await getPercentReturnsOfOpenPositions(true))
+getPercentReturnsOfOpenPositions(true).then(console.log)

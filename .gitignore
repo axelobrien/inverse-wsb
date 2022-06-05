@@ -4,3 +4,8 @@ dist
 secrets.*
 
 testAPI.*
+
+symbols.*
+
+*.log
+

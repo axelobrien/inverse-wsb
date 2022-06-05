@@ -1,6 +1,6 @@
 import Alpaca from '@alpacahq/alpaca-trade-api'
-import { fetchAndParseTickers } from './fetchWSB.js'
 import * as secrets from './secrets.js'
+import { createOrderParams } from './types/order'
 
 const alpaca = new Alpaca({
   keyId: secrets.ALPACA_KEY_ID,
@@ -49,7 +49,7 @@ async function getPrice(ticker: string) {
   return price
 }
 
-async function inverse(tickers: string[]) {
+export async function inverse(tickers: string[]) {
   const orders = tickers.map(async (ticker) => {
     const price = await getPrice(ticker)
 
@@ -68,7 +68,3 @@ async function inverse(tickers: string[]) {
   })
   await Promise.all(orders)
 }
-
-const Wallstreetbets = await fetchAndParseTickers()
-
-inverse(Wallstreetbets)
