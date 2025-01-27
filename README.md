@@ -5,6 +5,7 @@ This scrapes r/wallstreetbets and shorts every single stock mentioned
 ![image](https://github.com/user-attachments/assets/c3ca3a42-cede-4ea1-8785-52ffa18224b8)
 
 - Setup instructions for running locally
+- Setup a secrets.ts file with the Alpaca keys
 - `npm i`
 - `tsc -w`
 - `node ./dist/inverseWSB.js`
